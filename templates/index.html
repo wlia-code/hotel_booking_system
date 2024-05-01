@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mt-5 mb-4">Find Your Perfect Room</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-5">
+        {% for hotel in all_locations %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ hotel.location }}</h5>
+                    <p class="card-text">State: {{ hotel.state }}</p>
+                    <a href="#" class="btn btn-primary">View Rooms</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if available_rooms %}
+    <div class="row mt-5">
+        <h2>Available Rooms</h2>
+        {% for room in available_rooms %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Room Type: {{ room.get_room_type_display }}</h5>
+                    <p class="card-text">Price: {{ room.price }}</p>
+                    <p class="card-text">Capacity: {{ room.capacity }}</p>
+                    <a href="{% url 'book-room-page' %}?roomid={{ room.id }}" class="btn btn-primary">Book Now</a>
+           
