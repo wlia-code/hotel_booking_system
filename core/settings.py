@@ -31,7 +31,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['8000-wliacode-motelmeo-yrw1ssbaeih.ws-eu110.gitpod.io', 'localhost',
-                    'https://motel-meo-2bd41eb1b83a.herokuapp.com/','motel-meo-2bd41eb1b83a.herokuapp.com']
+                    'https://motel-meo-2bd41eb1b83a.herokuapp.com/',
+                    'motel-meo-2bd41eb1b83a.herokuapp.com',
+                    '8000-wliacode-hotelbookingsy-ap1uwmgjfjt.ws-eu110.gitpod.io']
 
 CSRF_TRUSTED_ORIGINS = ['https://8000-wliacode-motelmeo-yrw1ssbaeih.ws-eu110.gitpod.io',
 
@@ -83,7 +85,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["TEMPLATES_DIR"],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
