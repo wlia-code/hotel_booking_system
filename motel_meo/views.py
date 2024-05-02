@@ -1,90 +1,45 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Hotel, Room, Booking
-from django.contrib import messages
-from django.contrib.auth.models import User
-from .forms import SearchForm, UserRegistrationForm
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
+from .models import Room
 
 def home(request):
-    """
-    View function for the home page.
-    Renders the home page with a search form and available rooms.
-    """
-    all_locations = Hotel.objects.values_list('location', 'id').distinct().order_by('location')
-    available_rooms = None
-    if request.method == "POST":
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            try:
-                search_location = form.cleaned_data['search_location']
-                check_in = form.cleaned_data['check_in']
-                check_out = form.cleaned_data['check_out']
-                capacity = form.cleaned_data['capacity']
+    featured_rooms = Room.objects.filter(is_featured=True)[:3]
+    context = {'featured_rooms': featured_rooms}
+    return render(request, 'home.html', context)
 
-                reserved_room_ids = Booking.objects.filter(
-                    room__hotel=search_location,
-                    check_in__lt=check_out,
-                    check_out__gt=check_in
-                ).values_list('room_id', flat=True)
+def search_results(request):
+    if request.method == "GET":
+        # Retrieve search parameters from the form data
+        location = request.GET.get('location')
+        check_in = request.GET.get('check_in')
+        check_out = request.GET.get('check_out')
+        room_type = request.GET.get('room_type')
 
-                available_rooms = Room.objects.filter(
-                    hotel=search_location,
-                    capacity__gte=capacity
-                ).exclude(id__in=reserved_room_ids)
+        # Filter rooms based on search criteria
+        filtered_rooms = Room.objects.filter(
+            location=location,
+            room_type=room_type
+        ).exclude(
+            Q(booking__check_in__lte=check_out, booking__check_out__gte=check_in) | 
+            Q(booking__check_in__lte=check_out, booking__check_out__gte=check_out) |
+            Q(booking__check_in__lte=check_in, booking__check_out__gte=check_in) |
+            Q(booking__check_in__gte=check_in, booking__check_out__lte=check_out)
+        )
 
-                if not available_rooms:
-                    messages.warning(request, "Sorry, no rooms are available during this time period.")
-            except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
+        # Prepare a context dictionary with the results
+        context = {
+            'filtered_rooms': filtered_rooms,
+            'location': location,
+            'check_in': check_in,
+            'check_out': check_out,
+            'room_type': room_type
+        }
+        return render(request, 'search_results.html', context)
     else:
-        form = SearchForm()
+        # Handle cases where the request method is not GET
+        return render(request, 'search_results.html')
 
-    context = {'all_locations': all_locations, 'form': form, 'available_rooms': available_rooms}
-    return render(request, 'index.html', context)
-
-@login_required
-def book_room_page(request):
-    """
-    View function for booking a room.
-    Requires the user to be logged in.
-    Renders the book room page with details of the selected room.
-    """
-    room_id = request.GET.get('roomid')
-    if room_id is None:
-        return HttpResponse("Room ID is missing.")
-    try:
-        room = Room.objects.get(id=int(room_id))
-        return render(request, 'bookroom.html', {'room': room})
-    except Room.DoesNotExist:
-        return HttpResponse("Room not found.")
-
-@login_required
-def book_room(request):
-    if request.method == "POST":
-        room_id = request.POST.get('room_id')
-        room = Room.objects.get(id=room_id)
-        
-        check_in = request.POST.get('check_in')
-        check_out = request.POST.get('check_out')
-
-        if room.is_available(check_in, check_out):
-            booking = Booking.objects.create(
-                room=room,
-                customer=request.user,
-                check_in=check_in,
-                check_out=check_out
-            )
-
-            room.status = '2'
-            room.save()
-
-            messages.success(request, "Congratulations! Booking Successful")
-            return redirect(reverse('home-page'))  # Redirect to the home page
-        else:
-            messages.warning(request, "Sorry, This Room is unavailable for Booking")
-            return redirect(reverse('home-page'))  # Redirect to the home page
-    else:
-        return HttpResponse('Access Denied')
+def room_detail(request, room_id):
+    room = get_object_or_404(Room, pk=room_id)
+    context = {'room': room}
+    return render(request, 'room_detail.html', context)

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head></head>
+    <body>
+        <h1>{{ room.room_type }}</h1>
+
+        <img src="{{ room.image.url }}" alt="{{ room.room_type }} Room Image">
+
+        <p>Price: ${{ room.price }}</p>
+        <p>Capacity:
+            {{ room.capacity }}
+            guests</p>
+        <p>Description:
+            {{ room.description }}</p>
+
+        <h2>Amenities</h2>
+        <ul>
+            {% for amenity in room.amenities.all %}
+                <li>{{ amenity.name }}</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'booking-form' room.id %}">Book Now</a>
+    </body>
+</html>

@@ -18,8 +18,9 @@ from django.contrib import admin
 from django.urls import path,include
 from core import settings
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include("motel_meo.urls")),
-    path('accounts/', include('allauth.urls')),
+    path('', include('motel_meo.urls')),  # Include  motel_meo app's URLs
+    path('accounts/', include('allauth.urls')),  # Include allauth URLs
 ]

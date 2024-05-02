@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head></head>
+    <body>
+        <h1>Search Results</h1>
+
+        {% if filtered_rooms %}
+            <div class="room-grid">
+                {% for room in filtered_rooms %}
+                    <div class="room-card">
+                        <img src="{{ room.image.url }}" alt="{{ room.room_type }} Room">
+                        <h3>{{ room.room_type }}</h3>
+                        <p>{{ room.price }}</p>
+                        <a href="{% url 'room-detail' room.id %}">View Details</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No rooms found matching your criteria.</p>
+        {% endif %}
+    </body>
+</html>
+
+

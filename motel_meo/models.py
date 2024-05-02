@@ -2,64 +2,38 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class Hotel(models.Model):
-    """
-    Represents a hotel with basic information.
-    """
-    name = models.CharField(max_length=45, default="Motel-Meo")
-    location = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
+class Amenity(models.Model):
+    name = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.location
+        return self.name
 
-    class Meta:
-        verbose_name_plural = "Hotels"
 
 class Room(models.Model):
-    """
-    Represents a room within a hotel.
-    """
-    ROOM_TYPE = (
-        ("1", "Single"),
-        ("2", "Double"),
-        ("3", "Suite"),
-        ("4", "Triple")
+    ROOM_TYPES = (
+        ('1', 'Single'),
+        ('2', 'Double'),
+        ('3', 'Suite'),
     )
 
-    ROOM_STATUS = (
-        ("1", "Available"),
-        ("2", "Not Available")
-    )
-
-    room_type = models.CharField(max_length=50, choices=ROOM_TYPE)
-    status = models.CharField(max_length=50, choices=ROOM_STATUS)
-    price = models.DecimalField(max_digits=10, decimal_places=2)  
+    room_type = models.CharField(max_length=50, choices=ROOM_TYPES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.PositiveIntegerField()
-    size = models.PositiveIntegerField()
-    room_no = models.PositiveIntegerField()
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='room_images', blank=True, null=True) 
+    description = models.TextField(blank=True)
+    amenities = models.ManyToManyField(Amenity)
+    is_featured = models.BooleanField(default=False)
+
 
     def __str__(self):
-        return f"Hotel: {self.hotel.name} -- Room: {self.room_type} -- Price: {self.price}"
+        return f"Room Type: {self.room_type} - Price: {self.price}"
 
-    class Meta:
-        verbose_name_plural = "Rooms"
 
 class Booking(models.Model):
-    """
-    Represents a booking made by a customer.
-    """
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
-    booking_id = models.CharField(max_length=155, default="null")
 
     def __str__(self):
-        return f"Customer: {self.customer.username} -- Booking ID: {self.booking_id}"
-
-    class Meta:
-        verbose_name_plural = "Booking"
-
-
+        return f"Booking for {self.customer} - Room: {self.room}"
