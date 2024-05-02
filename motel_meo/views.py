@@ -6,8 +6,7 @@ from .forms import SearchForm, UserRegistrationForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-
-
+from django.urls import reverse
 
 def home(request):
     """
@@ -46,7 +45,6 @@ def home(request):
     context = {'all_locations': all_locations, 'form': form, 'available_rooms': available_rooms}
     return render(request, 'index.html', context)
 
-
 @login_required
 def book_room_page(request):
     """
@@ -62,7 +60,6 @@ def book_room_page(request):
         return render(request, 'bookroom.html', {'room': room})
     except Room.DoesNotExist:
         return HttpResponse("Room not found.")
-
 
 @login_required
 def book_room(request):
@@ -85,9 +82,9 @@ def book_room(request):
             room.save()
 
             messages.success(request, "Congratulations! Booking Successful")
-            return redirect("https://8000-wliacode-motelmeo-yrw1ssbaeih.ws-eu110.gitpod.io/")
+            return redirect(reverse('home-page'))  # Redirect to the home page
         else:
             messages.warning(request, "Sorry, This Room is unavailable for Booking")
-            return redirect("https://8000-wliacode-motelmeo-yrw1ssbaeih.ws-eu110.gitpod.io/")
+            return redirect(reverse('home-page'))  # Redirect to the home page
     else:
         return HttpResponse('Access Denied')

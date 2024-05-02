@@ -33,7 +33,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['8000-wliacode-motelmeo-yrw1ssbaeih.ws-eu110.gitpod.io', 'localhost',
                     'https://motel-meo-2bd41eb1b83a.herokuapp.com/',
                     'motel-meo-2bd41eb1b83a.herokuapp.com',
-                    '8000-wliacode-hotelbookingsy-ap1uwmgjfjt.ws-eu110.gitpod.io']
+                    '8000-wliacode-hotelbookingsy-ap1uwmgjfjt.ws-eu110.gitpod.io',
+                    '8000-wliacode-hotelbookingsy-ap1uwmgjfjt.ws-us110.gitpod.io']
 
 CSRF_TRUSTED_ORIGINS = ['https://8000-wliacode-motelmeo-yrw1ssbaeih.ws-eu110.gitpod.io',
 
@@ -62,8 +63,11 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = '/'
+#LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/landing-page/'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/landing-page/'
+
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
