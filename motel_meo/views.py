@@ -43,3 +43,33 @@ def room_detail(request, room_id):
     room = get_object_or_404(Room, pk=room_id)
     context = {'room': room}
     return render(request, 'room_detail.html', context)
+
+def booking_form(request, room_id):
+    # ... (rest of your existing code)
+
+    if request.user.is_authenticated:
+        profile = request.user.profile  # Access the related profile
+        initial_data = {
+            'address': profile.address
+        }
+        form = BookingForm(initial=initial_data)
+    else:
+        form = BookingForm()
+
+    if request.method == 'POST':
+        check_in = request.POST.get('check_in')
+        check_out = request.POST.get('check_out')
+
+        existing_bookings = Booking.objects.filter(room_id=room_id)  
+        is_available = not existing_bookings.filter(
+            Q(check_in__lte=check_out, check_out__gte=check_in) |
+            Q(check_in__gte=check_in, check_in__lt=check_out) 
+        ).exists()
+
+        context = {'room': room, 'check_in': check_in, 'check_out': check_out, 'is_available': is_available} 
+        return render(request, 'booking_form.html', context)
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = Booking
+        fields = ['check_in', 'check_out', ...]

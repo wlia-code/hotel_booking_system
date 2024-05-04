@@ -19,6 +19,7 @@ class UserRegistrationForm(forms.Form):
     password2 = forms.CharField(widget=forms.PasswordInput)
 
 class BookingForm(forms.ModelForm):
+    
     class Meta:
         model = Booking
         fields = ['room', 'check_in', 'check_out']

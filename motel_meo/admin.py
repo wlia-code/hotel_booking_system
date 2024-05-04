@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Amenity, Room, Booking
+from .models import Room, Amenity, Booking, Profile
+
+admin.site.register(Room)
+admin.site.register(Amenity)
+admin.site.register(Booking)
+admin.site.register(Profile)
+
 
 @admin.register(Amenity)
 class AmenityAdmin(admin.ModelAdmin):
